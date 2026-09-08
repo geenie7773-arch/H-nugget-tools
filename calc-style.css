@@ -1,7 +1,32 @@
 /*
-  H-nugget 건강 계산기 공통 스타일 v1
+  H-nugget 건강 계산기 공통 스타일 v3
   모바일 우선 — 480px 카드, 큰 입력칸/버튼, 반응형 2단 → 1단
+  v3: 탭형 다중 도구용 .hn-tabs/.hn-tab 스타일 추가
 */
+.hn-tabs {
+    display: flex;
+    gap: 4px;
+    max-width: 480px;
+    margin: 24px auto 0;
+    border-bottom: 2px solid #eee;
+}
+.hn-tab {
+    flex: 1;
+    padding: 12px 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #888;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.hn-tab-active {
+    color: #2f5fa8;
+    border-bottom-color: #2f5fa8;
+}
 .hn-card {
     max-width: 480px;
     margin: 24px auto;
