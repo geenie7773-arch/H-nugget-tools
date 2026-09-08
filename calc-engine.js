@@ -14,7 +14,7 @@
   <script>HNuggetCalc.init({ container: 'hn-calc', tools: ['bmi', 'bmr', 'tdee'] });</script>
 
   tool(단수, 문자열) / tools(복수, 배열) 중 하나만 넘기면 됨.
-  data-tool / init tool 값: 'bmi' | 'bmr' | 'tdee'
+    data-tool / init tool 값: 'bmi' | 'bmr' | 'tdee' | 'standardWeight' | 'protein'
 
   ⚠️ v4부터는 <link rel="stylesheet"> 태그를 본문에 넣지 않는다.
   티스토리 에디터가 저장(완료) 시 <link> 태그를 자동으로 제거하는 것이
@@ -99,7 +99,7 @@
     },
     note: 'Mifflin-St Jeor(1990) 공식 기준 · 남성 10×체중+6.25×키-5×나이+5, 여성은 마지막에 -161. 국내 별도 공식 기준치는 없으며 국제적으로 널리 쓰이는 추정 공식입니다.',
     source: 'Mifflin MD et al., Mifflin-St Jeor 공식(1990) · 기준일 2026-09',
-    explain: '기초대사량(BMR)은 하루 종일 누워만 있어도 생명 유지를 위해 최소한으로 소모되는 에너지입니다. 실제 활동량까지 반영한 하루 필요 칼로리가 궁금하다면 "하루 필요 칼로리(TDEE) 계산기"를 함께 확인해보���요.',
+        explain: '기초대사량(BMR)은 하루 종일 누워만 있어도 생명 유지를 위해 최소한으로 소모되는 에너지입니다. 실제 활동량까지 반영한 하루 필요 칼로리가 궁금하다면 "하루 필요 칼로리(TDEE) 계산기"를 함께 확인해보세요.',
     related: [] // { label: '하루 필요 칼로리(TDEE) 계산기', url: '...' } 발행 후 추가
   };
 
@@ -177,8 +177,41 @@
     related: [] // { label: 'BMI 계산기', url: '...' } 등 필요 시 추가
   };
 
-  // ---- 앞으로 추가할 도구는 여기 아래에 TOOLS.xxx = {...} 형태로 이어서 작성 ----
-
+     ---- 5. 단백질 섭취량 계산기 ------------------------------------------
+    TOOLS.protein = {
+          title: '단백질 섭취량 계산기',
+          tabLabel: '단백질',
+          fields: [
+            { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 },
+            { id: 'activity', label: '활동 수준', type: 'select', default: '0.91', options: [
+              { value: '0.91', label: '평소 운동을 거의 하지 않음' },
+              { value: '1.3', label: '주 2~3회 가벼운 운동' },
+              { value: '1.6', label: '주 4회 이상 근력운동' },
+              { value: '2.0', label: '근육량 증가가 목표(고강도 웨이트)' }
+                    ] }
+                ],
+          calculate: function (v) {
+                  var coef = parseFloat(v.activity);
+                  var val = Math.round(v.weight * coef);
+                  return {
+                            resultLabel: '하루 권장 단백질 섭취량',
+                            resultValue: val.toLocaleString('ko-KR') + ' g',
+                            color: '#7c4dae',
+                            category: '체중 ' + v.weight + 'kg × ' + coef + 'g/kg 기준',
+                            goals: [
+                              { label: '일반 성인(0.91g/kg)', value: Math.round(v.weight * 0.91).toLocaleString('ko-KR') + ' g' },
+                              { label: '선택 조건', value: val.toLocaleString('ko-KR') + ' g', current: true },
+                              { label: '근육증가 목표(2.0g/kg)', value: Math.round(v.weight * 2.0).toLocaleString('ko-KR') + ' g' }
+                                      ]
+                  };
+          },
+          note: '2020 한국인 영양소 섭취기준(KDRIs) 성인 단백질 권장섭취량은 체중 1kg당 약 0.91g입니다. 규칙적으로 운동하거나 근육량 증가가 목표라면 체중 1kg당 1.2~2.0g까지 권장하는 자료도 있어, 하나의 숫자보다는 활동 수준에 따른 범위로 참고하는 것이 좋습니다.',
+          source: '보건복지부·한국영양학회, 2020 한국인 영양소 섭취기준(KDRIs) · 기준일 2026-09',
+          explain: '단백질 필요량은 목적에 따라 달라집니다. 특별한 운동 없이 건강 유지가 목적이라면 2020 한국인 영양소 섭취기준의 권장섭취량인 체중 1kg당 약 0.91g이 기준이 되고, 규칙적으로 근력운동을 하거나 근육량을 늘리는 것이 목표라면 체중 1kg당 1.2~2.0g까지 섭취를 권장하는 자료도 있습니다. 신장질환 등으로 단백질 섭취를 제한해야 하는 경우는 이 계산기의 기준을 그대로 적용하지 말고 의료진과 상담하는 것이 좋습니다.',
+          related: [] // { label: '하루 필요 칼로리(TDEE) 계산기', url: '...' } 등 필요 시 추가
+    };
+  
+    // ---- 앞으로 추가할 도구는 여기 아래에 TOOLS.xxx = {...} 형태로 이어서 작성 ----
   // ---- 공통 유틸 -------------------------------------------------------
   function num(v) {
     v = (v || '').toString().replace(/[^0-9.]/g, '');
