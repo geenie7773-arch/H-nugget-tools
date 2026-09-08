@@ -1,22 +1,26 @@
 /*
-  H-nugget 건강 계산기 공통 엔진 v3
+  H-nugget 건강 계산기 공통 엔진 v4
   ------------------------------------------------
-  [단일 도구] 티스토리 글(HTML 모드)에 넣는 방법 — 아래 4줄만 붙여넣으면 됨:
+  [단일 도구] 티스토리 글(HTML 모드)에 넣는 방법 — 아래 3줄만 붙여넣으면 됨:
 
   <div id="hn-calc" data-tool="bmi"></div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=3">
-  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=3"></script>
+  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=4"></script>
   <script>HNuggetCalc.init({ container: 'hn-calc', tool: 'bmi' });</script>
 
-  [탭형 다중 도구] v3 신규 — 하나의 카드 안에서 탭으로 여러 계산기를 전환:
+  [탭형 다중 도구] 하나의 카드 안에서 탭으로 여러 계산기를 전환:
 
   <div id="hn-calc"></div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=3">
-  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=3"></script>
+  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=4"></script>
   <script>HNuggetCalc.init({ container: 'hn-calc', tools: ['bmi', 'bmr', 'tdee'] });</script>
 
   tool(단수, 문자열) / tools(복수, 배열) 중 하나만 넘기면 됨.
   data-tool / init tool 값: 'bmi' | 'bmr' | 'tdee'
+
+  ⚠️ v4부터는 <link rel="stylesheet"> 태그를 본문에 넣지 않는다.
+  티스토리 에디터가 저장(완료) 시 <link> 태그를 자동으로 제거하는 것이
+  실제 발행 페이지에서 확인되어(2026-09), 엔진이 로드되자마자 스스로
+  document.head에 stylesheet <link>를 주입하도록 바꿨다. 그래서 embed
+  스니펫에서 <link> 줄이 완전히 빠짐 — 이 방식이 유일하게 검증된 방법.
 
   새 계산기를 추가할 때는 아래 TOOLS 객체에 항목만 하나 더 추가하면 됨.
   (입력폼/버튼/결과카드/설명 아코디언/출처 표시는 전부 공통 렌더러가 처리)
@@ -25,10 +29,23 @@
   반환하면 결과 카드 아래에 3분할 목표 카드(감량/유지/증량 등)를 렌더링함.
   v3 변경사항: tools(배열)로 init하면 상단에 탭 버튼이 자동 생성되고,
   탭을 누르면 해당 도구의 입력폼/결과카드가 같은 자리에 다시 렌더링됨.
+  v4 변경사항: calc-style.css를 <link> 태그 대신 엔진이 JS로 직접
+  document.head에 주입함(티스토리 저장 시 <link> 태그 소실 문제 회피).
   기존 단일 tool 방식과 bmi 도구 동작은 그대로 유지됨(하위 호환).
 */
 (function () {
     'use strict';
+
+   // ---- 스타일시트 자동 주입 (v4) -----------------------------------------
+   // 티스토리 에디터가 본문 저장 시 <link> 태그를 제거하는 문제를 피하기 위해
+   // <link>를 본문에 넣지 않고, 엔진이 실행되자마자 스스로 head에 주입한다.
+   if (!document.getElementById('hn-calc-style-v4')) {
+         var linkEl = document.createElement('link');
+         linkEl.id = 'hn-calc-style-v4';
+         linkEl.rel = 'stylesheet';
+         linkEl.href = 'https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=4';
+         document.head.appendChild(linkEl);
+   }
 
    var TOOLS = {};
 
