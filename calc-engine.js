@@ -1,13 +1,21 @@
 /*
-  H-nugget 건강 계산기 공통 엔진 v2
+  H-nugget 건강 계산기 공통 엔진 v3
   ------------------------------------------------
-  티스토리 글(HTML 모드)에 넣는 방법 — 아래 4줄만 붙여넣으면 됨:
+  [단일 도구] 티스토리 글(HTML 모드)에 넣는 방법 — 아래 4줄만 붙여넣으면 됨:
 
   <div id="hn-calc" data-tool="bmi"></div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css">
-  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=3">
+  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=3"></script>
   <script>HNuggetCalc.init({ container: 'hn-calc', tool: 'bmi' });</script>
 
+  [탭형 다중 도구] v3 신규 — 하나의 카드 안에서 탭으로 여러 계산기를 전환:
+
+  <div id="hn-calc"></div>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=3">
+  <script src="https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-engine.js?v=3"></script>
+  <script>HNuggetCalc.init({ container: 'hn-calc', tools: ['bmi', 'bmr', 'tdee'] });</script>
+
+  tool(단수, 문자열) / tools(복수, 배열) 중 하나만 넘기면 됨.
   data-tool / init tool 값: 'bmi' | 'bmr' | 'tdee'
 
   새 계산기를 추가할 때는 아래 TOOLS 객체에 항목만 하나 더 추가하면 됨.
@@ -15,7 +23,9 @@
 
   v2 변경사항: select(드롭다운) 필드 타입 추가, calculate()가 goals 배열을
   반환하면 결과 카드 아래에 3분할 목표 카드(감량/유지/증량 등)를 렌더링함.
-  기존 bmi 도구 동작은 그대로 유지됨(number 필드/단일 결과 렌더링 경로 불변).
+  v3 변경사항: tools(배열)로 init하면 상단에 탭 버튼이 자동 생성되고,
+  탭을 누르면 해당 도구의 입력폼/결과카드가 같은 자리에 다시 렌더링됨.
+  기존 단일 tool 방식과 bmi 도구 동작은 그대로 유지됨(하위 호환).
 */
 (function () {
     'use strict';
@@ -25,6 +35,7 @@
    // ---- 1. BMI 계산기 --------------------------------------------------
    TOOLS.bmi = {
          title: 'BMI 계산기',
+         tabLabel: 'BMI',
          fields: [
            { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
            { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 }
@@ -49,6 +60,7 @@
    // ---- 2. 기초대사량(BMR) 계산기 --------------------------------------
    TOOLS.bmr = {
          title: '기초대사량(BMR) 계산기',
+         tabLabel: 'BMR',
          fields: [
            { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
              { value: 'm', label: '남성' },
@@ -77,6 +89,7 @@
    // ---- 3. 하루 필요 칼로리(TDEE) 계산기 --------------------------------
    TOOLS.tdee = {
          title: '하루 필요 칼로리(TDEE) 계산기',
+         tabLabel: 'TDEE',
          fields: [
            { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
              { value: 'm', label: '남성' },
@@ -102,7 +115,7 @@
                            resultLabel: '하루 유지 칼로리(TDEE)',
                            resultValue: val.toLocaleString('ko-KR') + ' kcal',
                            category: '기초대사량 ' + Math.round(bmr).toLocaleString('ko-KR') + 'kcal × ' + act,
-                   color: '#c9702f',
+                           color: '#c9702f',
                            goals: [
                              { label: '감량 목표', value: Math.round(tdee * 0.8).toLocaleString('ko-KR') + ' kcal' },
                              { label: '유지', value: val.toLocaleString('ko-KR') + ' kcal', current: true },
@@ -133,7 +146,7 @@
    }
 
    // ---- 렌더러 -----------------------------------------------------------
-   function render(root, key) {
+   function renderToolBody(root, key) {
          var tool = TOOLS[key];
          if (!tool) { root.innerHTML = '<p>준비 중인 도구입니다.</p>'; return; }
 
@@ -237,12 +250,43 @@
          });
    }
 
+   // ---- 탭형 다중 도구 렌더러 (v3) ---------------------------------------
+   function renderTabs(root, keys, active) {
+         var tabsHtml = keys.map(function (k) {
+                 var t = TOOLS[k];
+                 var label = t ? (t.tabLabel || t.title) : k;
+                 var activeCls = (k === active) ? ' hn-tab-active' : '';
+                 return '<button type="button" class="hn-tab' + activeCls + '" data-tool="' + k + '">' + label + '</button>';
+         }).join('');
+
+      root.innerHTML =
+              '<div class="hn-tabs" id="hn-tabs">' + tabsHtml + '</div>' +
+              '<div id="hn-tab-content"></div>';
+
+      var contentEl = root.querySelector('#hn-tab-content');
+         renderToolBody(contentEl, active);
+
+      var tabBtns = root.querySelectorAll('.hn-tab');
+         for (var i = 0; i < tabBtns.length; i++) {
+                 tabBtns[i].addEventListener('click', function (e) {
+                           var key = e.currentTarget.getAttribute('data-tool');
+                           for (var j = 0; j < tabBtns.length; j++) { tabBtns[j].classList.remove('hn-tab-active'); }
+                           e.currentTarget.classList.add('hn-tab-active');
+                           renderToolBody(contentEl, key);
+                 });
+         }
+   }
+
    window.HNuggetCalc = {
          TOOLS: TOOLS,
          init: function (opts) {
                  var root = document.getElementById(opts.container);
                  if (!root) return;
-                 render(root, opts.tool);
+                 if (opts.tools && opts.tools.length) {
+                           renderTabs(root, opts.tools, opts.active || opts.tools[0]);
+                 } else {
+                           renderToolBody(root, opts.tool);
+                 }
          }
    };
 })();
