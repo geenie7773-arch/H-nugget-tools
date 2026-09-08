@@ -34,276 +34,307 @@
   기존 단일 tool 방식과 bmi 도구 동작은 그대로 유지됨(하위 호환).
 */
 (function () {
-    'use strict';
+  'use strict';
 
-   // ---- 스타일시트 자동 주입 (v4) -----------------------------------------
-   // 티스토리 에디터가 본문 저장 시 <link> 태그를 제거하는 문제를 피하기 위해
-   // <link>를 본문에 넣지 않고, 엔진이 실행되자마자 스스로 head에 주입한다.
-   if (!document.getElementById('hn-calc-style-v4')) {
-         var linkEl = document.createElement('link');
-         linkEl.id = 'hn-calc-style-v4';
-         linkEl.rel = 'stylesheet';
-         linkEl.href = 'https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=4';
-         document.head.appendChild(linkEl);
-   }
+  // ---- 스타일시트 자동 주입 (v4) -----------------------------------------
+  // 티스토리 에디터가 본문 저장 시 <link> 태그를 제거하는 문제를 피하기 위해
+  // <link>를 본문에 넣지 않고, 엔진이 실행되자마자 스스로 head에 주입한다.
+  if (!document.getElementById('hn-calc-style-v4')) {
+    var linkEl = document.createElement('link');
+    linkEl.id = 'hn-calc-style-v4';
+    linkEl.rel = 'stylesheet';
+    linkEl.href = 'https://cdn.jsdelivr.net/gh/geenie7773-arch/H-nugget-tools@main/calc-style.css?v=4';
+    document.head.appendChild(linkEl);
+  }
 
-   var TOOLS = {};
+  var TOOLS = {};
 
-   // ---- 1. BMI 계산기 --------------------------------------------------
-   TOOLS.bmi = {
-         title: 'BMI 계산기',
-         tabLabel: 'BMI',
-         fields: [
-           { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
-           { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 }
-               ],
-         calculate: function (v) {
-                 var h = v.height / 100;
-                 var bmi = v.weight / (h * h);
-                 var val = Math.round(bmi * 10) / 10;
-                 var category, color;
-                 if (val < 18.5) { category = '저체중'; color = '#6b8e23'; }
-                 else if (val < 23) { category = '정상'; color = '#2f5fa8'; }
-                 else if (val < 25) { category = '비만전단계(과체중)'; color = '#c9702f'; }
-                 else { category = '비만'; color = '#d1452b'; }
-                 return { resultLabel: '내 BMI', resultValue: val, category: category, color: color };
-         },
-         note: '대한비만학회·질병관리청 국가건강정보포털 기준(아시아-태평양 기준) · 18.5 미만 저체중 · 18.5~22.9 정상 · 23~24.9 비만전단계 · 25 이상 비만. 참고용 수치이며, 근육량이 많거나 적은 경우 실제 체지방과 차이가 있을 수 있습니다.',
-         source: '대한비만학회 / 질병관리청 국가건강정보포털 · 기준일 2026-09',
-         explain: 'BMI(체질량지수)는 키와 몸무게로 비만도를 가늠하는 가장 널리 쓰이는 지표입니다. 계산식은 체중(kg) ÷ 신장(m)²입니다. 다만 근육량, 나이, 골격 구조에 따라 실제 체지방률과 차이가 날 수 있어 하나의 참고 지표로만 활용하는 것이 좋습니다.',
-         related: [] // 다른 계산기가 발행되면 { label: '기초대사량 계산기', url: '...' } 형태로 여기에 추가
-   };
+  // ---- 1. BMI 계산기 --------------------------------------------------
+  TOOLS.bmi = {
+    title: 'BMI 계산기',
+    tabLabel: 'BMI',
+    fields: [
+      { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
+      { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 }
+    ],
+    calculate: function (v) {
+      var h = v.height / 100;
+      var bmi = v.weight / (h * h);
+      var val = Math.round(bmi * 10) / 10;
+      var category, color;
+      if (val < 18.5) { category = '저체중'; color = '#6b8e23'; }
+      else if (val < 23) { category = '정상'; color = '#2f5fa8'; }
+      else if (val < 25) { category = '비만전단계(과체중)'; color = '#c9702f'; }
+      else { category = '비만'; color = '#d1452b'; }
+      return { resultLabel: '내 BMI', resultValue: val, category: category, color: color };
+    },
+    note: '대한비만학회·질병관리청 국가건강정보포털 기준(아시아-태평양 기준) · 18.5 미만 저체중 · 18.5~22.9 정상 · 23~24.9 비만전단계 · 25 이상 비만. 참고용 수치이며, 근육량이 많거나 적은 경우 실제 체지방과 차이가 있을 수 있습니다.',
+    source: '대한비만학회 / 질병관리청 국가건강정보포털 · 기준일 2026-09',
+    explain: 'BMI(체질량지수)는 키와 몸무게로 비만도를 가늠하는 가장 널리 쓰이는 지표입니다. 계산식은 체중(kg) ÷ 신장(m)²입니다. 다만 근육량, 나이, 골격 구조에 따라 실제 체지방률과 차이가 날 수 있어 하나의 참고 지표로만 활용하는 것이 좋습니다.',
+    related: [] // 다른 계산기가 발행되면 { label: '기초대사량 계산기', url: '...' } 형태로 여기에 추가
+  };
 
-   // ---- 2. 기초대사량(BMR) 계산기 --------------------------------------
-   TOOLS.bmr = {
-         title: '기초대사량(BMR) 계산기',
-         tabLabel: 'BMR',
-         fields: [
-           { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
-             { value: 'm', label: '남성' },
-             { value: 'f', label: '여성' }
-                   ] },
-           { id: 'age', label: '나이 (세)', placeholder: '30', min: 15, max: 100 },
-           { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
-           { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 }
-               ],
-         calculate: function (v) {
-                 var bmr = 10 * v.weight + 6.25 * v.height - 5 * v.age + (v.sex === 'm' ? 5 : -161);
-                 var val = Math.round(bmr);
-                 return {
-                           resultLabel: '기초대사량(BMR)',
-                           resultValue: val.toLocaleString('ko-KR') + ' kcal',
-                           category: '숨만 쉬어도 쓰는 최소 에너지',
-                           color: '#0f6e5c'
-                 };
-         },
-         note: 'Mifflin-St Jeor(1990) 공식 기준 · 남성 10×체중+6.25×키-5×나이+5, 여성은 마지막에 -161. 국내 별도 공식 기준치는 없으며 국제적으로 널리 쓰이는 추정 공식입니다.',
-         source: 'Mifflin MD et al., Mifflin-St Jeor 공식(1990) · 기준일 2026-09',
-         explain: '기초대사량(BMR)은 하루 종일 누워만 있어도 생명 유지를 위해 최소한으로 소모되는 에너지입니다. 실제 활동량까지 반영한 하루 필요 칼로리가 궁금하다면 "하루 필요 칼로리(TDEE) 계산기"를 함께 확인해보세요.',
-         related: [] // { label: '하루 필요 칼로리(TDEE) 계산기', url: '...' } 발행 후 추가
-   };
+  // ---- 2. 기초대사량(BMR) 계산기 --------------------------------------
+  TOOLS.bmr = {
+    title: '기초대사량(BMR) 계산기',
+    tabLabel: 'BMR',
+    fields: [
+      { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
+        { value: 'm', label: '남성' },
+        { value: 'f', label: '여성' }
+      ] },
+      { id: 'age', label: '나이 (세)', placeholder: '30', min: 15, max: 100 },
+      { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
+      { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 }
+    ],
+    calculate: function (v) {
+      var bmr = 10 * v.weight + 6.25 * v.height - 5 * v.age + (v.sex === 'm' ? 5 : -161);
+      var val = Math.round(bmr);
+      return {
+        resultLabel: '기초대사량(BMR)',
+        resultValue: val.toLocaleString('ko-KR') + ' kcal',
+        category: '숨만 쉬어도 쓰는 최소 에너지',
+        color: '#0f6e5c'
+      };
+    },
+    note: 'Mifflin-St Jeor(1990) 공식 기준 · 남성 10×체중+6.25×키-5×나이+5, 여성은 마지막에 -161. 국내 별도 공식 기준치는 없으며 국제적으로 널리 쓰이는 추정 공식입니다.',
+    source: 'Mifflin MD et al., Mifflin-St Jeor 공식(1990) · 기준일 2026-09',
+    explain: '기초대사량(BMR)은 하루 종일 누워만 있어도 생명 유지를 위해 최소한으로 소모되는 에너지입니다. 실제 활동량까지 반영한 하루 필요 칼로리가 궁금하다면 "하루 필요 칼로리(TDEE) 계산기"를 함께 확인해보���요.',
+    related: [] // { label: '하루 필요 칼로리(TDEE) 계산기', url: '...' } 발행 후 추가
+  };
 
-   // ---- 3. 하루 필요 칼로리(TDEE) 계산기 --------------------------------
-   TOOLS.tdee = {
-         title: '하루 필요 칼로리(TDEE) 계산기',
-         tabLabel: 'TDEE',
-         fields: [
-           { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
-             { value: 'm', label: '남성' },
-             { value: 'f', label: '여성' }
-                   ] },
-           { id: 'age', label: '나이 (세)', placeholder: '30', min: 15, max: 100 },
-           { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
-           { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 },
-           { id: 'activity', label: '활동량', type: 'select', default: '1.55', options: [
-             { value: '1.2', label: '거의 운동 안 함 (좌식 생활)' },
-             { value: '1.375', label: '가벼운 운동 (주 1~3일)' },
-             { value: '1.55', label: '보통 운동 (주 3~5일)' },
-             { value: '1.725', label: '활발한 운동 (주 6~7일)' },
-             { value: '1.9', label: '매우 활발함 (매일 강도 높은 운동·육체노동)' }
-                   ] }
-               ],
-         calculate: function (v) {
-                 var act = parseFloat(v.activity);
-                 var bmr = 10 * v.weight + 6.25 * v.height - 5 * v.age + (v.sex === 'm' ? 5 : -161);
-                 var tdee = bmr * act;
-                 var val = Math.round(tdee);
-                 return {
-                           resultLabel: '하루 유지 칼로리(TDEE)',
-                           resultValue: val.toLocaleString('ko-KR') + ' kcal',
-                           category: '기초대사량 ' + Math.round(bmr).toLocaleString('ko-KR') + 'kcal × ' + act,
-                           color: '#c9702f',
-                           goals: [
-                             { label: '감량 목표', value: Math.round(tdee * 0.8).toLocaleString('ko-KR') + ' kcal' },
-                             { label: '유지', value: val.toLocaleString('ko-KR') + ' kcal', current: true },
-                             { label: '증량 목표', value: Math.round(tdee * 1.15).toLocaleString('ko-KR') + ' kcal' }
-                                     ]
-                 };
-         },
-         note: '기초대사량(Mifflin-St Jeor 공식) × 활동계수로 계산합니다. 감량 목표는 유지 칼로리의 80%, 증량 목표는 115% 수준을 참고치로 제시한 것이며, 개인의 대사·체성분·건강 상태에 따라 실제 필요량은 달라질 수 있습니다.',
-         source: 'Mifflin-St Jeor 공식(1990) + 활동계수 · 기준일 2026-09',
-         explain: '하루 필요 칼로리(TDEE)는 기초대사량에 실제 활동량을 곱해 하루 동안 실제로 소모하는 총 에너지를 추정한 값입니다. 체중을 유지하려면 이 칼로리만큼, 감량하려면 이보다 적게, 증량하려면 이보다 많이 섭취하는 것이 일반적인 방향입니다.',
-         related: [] // { label: '기초대사량(BMR) 계산기', url: '...' } 발행 후 추가
-   };
+  // ---- 3. 하루 필요 칼로리(TDEE) 계산기 --------------------------------
+  TOOLS.tdee = {
+    title: '하루 필요 칼로리(TDEE) 계산기',
+    tabLabel: 'TDEE',
+    fields: [
+      { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
+        { value: 'm', label: '남성' },
+        { value: 'f', label: '여성' }
+      ] },
+      { id: 'age', label: '나이 (세)', placeholder: '30', min: 15, max: 100 },
+      { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
+      { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 },
+      { id: 'activity', label: '활동량', type: 'select', default: '1.55', options: [
+        { value: '1.2', label: '거의 운동 안 함 (좌식 생활)' },
+        { value: '1.375', label: '가벼운 운동 (주 1~3일)' },
+        { value: '1.55', label: '보통 운동 (주 3~5일)' },
+        { value: '1.725', label: '활발한 운동 (주 6~7일)' },
+        { value: '1.9', label: '매우 활발함 (매일 강도 높은 운동·육체노동)' }
+      ] }
+    ],
+    calculate: function (v) {
+      var act = parseFloat(v.activity);
+      var bmr = 10 * v.weight + 6.25 * v.height - 5 * v.age + (v.sex === 'm' ? 5 : -161);
+      var tdee = bmr * act;
+      var val = Math.round(tdee);
+      return {
+        resultLabel: '하루 유지 칼로리(TDEE)',
+        resultValue: val.toLocaleString('ko-KR') + ' kcal',
+        category: '기초대사량 ' + Math.round(bmr).toLocaleString('ko-KR') + 'kcal × ' + act,
+        color: '#c9702f',
+        goals: [
+          { label: '감량 목표', value: Math.round(tdee * 0.8).toLocaleString('ko-KR') + ' kcal' },
+          { label: '유지', value: val.toLocaleString('ko-KR') + ' kcal', current: true },
+          { label: '증량 목표', value: Math.round(tdee * 1.15).toLocaleString('ko-KR') + ' kcal' }
+        ]
+      };
+    },
+    note: '기초대사량(Mifflin-St Jeor 공식) × 활동계수로 계산합니다. 감량 목표는 유지 칼로리의 80%, 증량 목표는 115% 수준을 참고치로 제시한 것이며, 개인의 대사·체성분·건강 상태에 따라 실제 필요량은 달라질 수 있습니다.',
+    source: 'Mifflin-St Jeor 공식(1990) + 활동계수 · 기준일 2026-09',
+    explain: '하루 필요 칼로리(TDEE)는 기초대사량에 실제 활동량을 곱해 하루 동안 실제로 소모하는 총 에너지를 추정한 값입니다. 체중을 유지하려면 이 칼로리만큼, 감량하려면 이보다 적게, 증량하려면 이보다 많이 섭취하는 것이 일반적인 방향입니다.',
+    related: [] // { label: '기초대사량(BMR) 계산기', url: '...' } 발행 후 추가
+  };
 
-   // ---- 앞으로 추가할 도구는 여기 아래에 TOOLS.xxx = {...} 형태로 이어서 작성 ----
+  // ---- 4. 적정체중(표준체중) 계산기 ------------------------------------
+  TOOLS.standardWeight = {
+    title: '적정체중(표준체중) 계산기',
+    tabLabel: '표준체중',
+    fields: [
+      { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
+        { value: 'm', label: '남성' },
+        { value: 'f', label: '여성' }
+      ] },
+      { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 }
+    ],
+    calculate: function (v) {
+      var h = v.height / 100;
+      var coef = v.sex === 'm' ? 22 : 21;
+      var std = h * h * coef;
+      var val = Math.round(std * 10) / 10;
+      var rangeLow = Math.round(h * h * 18.5 * 10) / 10;
+      var rangeHigh = Math.round(h * h * 22.9 * 10) / 10;
+      return {
+        resultLabel: '표준체중',
+        resultValue: val.toLocaleString('ko-KR') + ' kg',
+        category: 'BMI 정상범위(18.5~22.9) 환산 시 ' + rangeLow.toLocaleString('ko-KR') + '~' + rangeHigh.toLocaleString('ko-KR') + 'kg',
+        color: '#2f7d6b'
+      };
+    },
+    note: '대한당뇨병학회 등에서 제시하는 표준체중 계산법(성별 계수 적용) 기준입니다 · 남성 키(m)²×22, 여성 키(m)²×21. 표준체중 산식은 기관·자료마다 계수가 달라질 수 있어(Broca 변형식 등) 절대적인 목표 체중이 아니라 참고 기준치로 활용하는 것이 좋습니다.',
+    source: '대한당뇨병학회 · 기준일 2026-09',
+    explain: '표준체중은 키를 기준으로 계산한 참고 체중입니다. 이 계산기는 대한당뇨병학회 등에서 제시하는 성별 계수(남성 22, 여성 21)를 사용합니다. 다만 표준체중이 반드시 도달해야 할 목표 체중을 의미하지는 않습니다. 근육량·체지방률·건강 상태에 따라 실제로 건강한 체중 범위는 사람마다 다를 수 있어, 함께 표시되는 BMI 정상범위(18.5~22.9) 환산 체중 구간도 참고하는 것이 좋습니다.',
+    related: [] // { label: 'BMI 계산기', url: '...' } 등 필요 시 추가
+  };
 
-   // ---- 공통 유틸 -------------------------------------------------------
-   function num(v) {
-         v = (v || '').toString().replace(/[^0-9.]/g, '');
-         return v ? parseFloat(v) : NaN;
-   }
+  // ---- 앞으로 추가할 도구는 여기 아래에 TOOLS.xxx = {...} 형태로 이어서 작성 ----
 
-   function relatedHtml(tool) {
-         if (!tool.related || !tool.related.length) return '';
-         var links = tool.related.map(function (r) {
-                 return '<a href="' + r.url + '">' + r.label + '</a>';
-         }).join(' · ');
-         return '<div class="hn-related"><span>관련 계산기</span> ' + links + '</div>';
-   }
+  // ---- 공통 유틸 -------------------------------------------------------
+  function num(v) {
+    v = (v || '').toString().replace(/[^0-9.]/g, '');
+    return v ? parseFloat(v) : NaN;
+  }
 
-   // ---- 렌더러 -----------------------------------------------------------
-   function renderToolBody(root, key) {
-         var tool = TOOLS[key];
-         if (!tool) { root.innerHTML = '<p>준비 중인 도구입니다.</p>'; return; }
+  function relatedHtml(tool) {
+    if (!tool.related || !tool.related.length) return '';
+    var links = tool.related.map(function (r) {
+      return '<a href="' + r.url + '">' + r.label + '</a>';
+    }).join(' · ');
+    return '<div class="hn-related"><span>관련 계산기</span> ' + links + '</div>';
+  }
 
-      var fieldsHtml = tool.fields.map(function (f) {
-              if (f.type === 'select') {
-                        var optsHtml = f.options.map(function (o) {
-                                    var sel = (f.default !== undefined && o.value === f.default) ? ' selected' : '';
-                                    return '<option value="' + o.value + '"' + sel + '>' + o.label + '</option>';
-                        }).join('');
-                        return (
-                                    '<div class="hn-field">' +
-                                      '<label for="hn-' + f.id + '">' + f.label + '</label>' +
-                                      '<select id="hn-' + f.id + '">' + optsHtml + '</select>' +
-                                    '</div>'
-                                  );
-              }
-              return (
-                        '<div class="hn-field">' +
-                          '<label for="hn-' + f.id + '">' + f.label + '</label>' +
-                          '<input type="number" inputmode="decimal" id="hn-' + f.id + '" ' +
-                            'placeholder="' + f.placeholder + '" min="' + f.min + '" max="' + f.max + '">' +
-                        '</div>'
-                      );
-      }).join('');
+  // ---- 렌더러 -----------------------------------------------------------
+  function renderToolBody(root, key) {
+    var tool = TOOLS[key];
+    if (!tool) { root.innerHTML = '<p>준비 중인 도구입니다.</p>'; return; }
 
-      root.innerHTML =
-              '<div class="hn-card">' +
-                '<div class="hn-fields">' + fieldsHtml + '</div>' +
-                '<button type="button" class="hn-btn" id="hn-calc-btn">계산하기</button>' +
-                '<div class="hn-result" id="hn-result" hidden>' +
-                  '<div class="hn-result-label" id="hn-result-label"></div>' +
-                  '<div class="hn-result-value" id="hn-result-value"></div>' +
-                  '<div class="hn-result-category" id="hn-result-category"></div>' +
-                  '<div class="hn-goals" id="hn-goals" hidden></div>' +
-                '</div>' +
-                '<div class="hn-note">' + tool.note + '</div>' +
-                relatedHtml(tool) +
-                '<button type="button" class="hn-toggle" id="hn-toggle-btn">계산 방법 더 보기 ▾</button>' +
-                '<div class="hn-explain" id="hn-explain" hidden>' +
-                  '<p>' + tool.explain + '</p>' +
-                  '<div class="hn-source">출처: ' + tool.source + '</div>' +
-                '</div>' +
-              '</div>';
+    var fieldsHtml = tool.fields.map(function (f) {
+      if (f.type === 'select') {
+        var optsHtml = f.options.map(function (o) {
+          var sel = (f.default !== undefined && o.value === f.default) ? ' selected' : '';
+          return '<option value="' + o.value + '"' + sel + '>' + o.label + '</option>';
+        }).join('');
+        return (
+          '<div class="hn-field">' +
+            '<label for="hn-' + f.id + '">' + f.label + '</label>' +
+            '<select id="hn-' + f.id + '">' + optsHtml + '</select>' +
+          '</div>'
+        );
+      }
+      return (
+        '<div class="hn-field">' +
+          '<label for="hn-' + f.id + '">' + f.label + '</label>' +
+          '<input type="number" inputmode="decimal" id="hn-' + f.id + '" ' +
+            'placeholder="' + f.placeholder + '" min="' + f.min + '" max="' + f.max + '">' +
+        '</div>'
+      );
+    }).join('');
 
-      root.querySelector('#hn-calc-btn').addEventListener('click', function () {
-              var values = {};
-              var ok = true;
-              tool.fields.forEach(function (f) {
-                        var el = root.querySelector('#hn-' + f.id);
-                        if (f.type === 'select') {
-                                    values[f.id] = el.value;
-                                    return;
-                        }
-                        var v = num(el.value);
-                        if (isNaN(v) || v < f.min || v > f.max) ok = false;
-                        values[f.id] = v;
-              });
+    root.innerHTML =
+      '<div class="hn-card">' +
+        '<div class="hn-fields">' + fieldsHtml + '</div>' +
+        '<button type="button" class="hn-btn" id="hn-calc-btn">계산하기</button>' +
+        '<div class="hn-result" id="hn-result" hidden>' +
+          '<div class="hn-result-label" id="hn-result-label"></div>' +
+          '<div class="hn-result-value" id="hn-result-value"></div>' +
+          '<div class="hn-result-category" id="hn-result-category"></div>' +
+          '<div class="hn-goals" id="hn-goals" hidden></div>' +
+        '</div>' +
+        '<div class="hn-note">' + tool.note + '</div>' +
+        relatedHtml(tool) +
+        '<button type="button" class="hn-toggle" id="hn-toggle-btn">계산 방법 더 보기 ▾</button>' +
+        '<div class="hn-explain" id="hn-explain" hidden>' +
+          '<p>' + tool.explain + '</p>' +
+          '<div class="hn-source">출처: ' + tool.source + '</div>' +
+        '</div>' +
+      '</div>';
 
-                                                                var resultBox = root.querySelector('#hn-result');
-              var goalsBox = root.querySelector('#hn-goals');
-              resultBox.hidden = false;
-
-                                                                if (!ok) {
-                                                                          root.querySelector('#hn-result-label').textContent = '';
-                                                                          root.querySelector('#hn-result-value').textContent = '';
-                                                                          goalsBox.hidden = true;
-                                                                          goalsBox.innerHTML = '';
-                                                                          var numericFields = tool.fields.filter(function (f) { return f.type !== 'select'; });
-                                                                          root.querySelector('#hn-result-category').textContent =
-                                                                                      '값을 확인해주세요 (' + numericFields.map(function (f) {
-                                                                                                    return f.label + ' ' + f.min + '~' + f.max;
-                                                                                      }).join(', ') + ')';
-                                                                          return;
-                                                                }
-
-                                                                var r = tool.calculate(values);
-              root.querySelector('#hn-result-label').textContent = r.resultLabel;
-              root.querySelector('#hn-result-value').textContent = r.resultValue;
-              root.querySelector('#hn-result-value').style.color = r.color || '#2f5fa8';
-              root.querySelector('#hn-result-category').textContent = r.category || '';
-
-                                                                if (r.goals && r.goals.length) {
-                                                                          goalsBox.hidden = false;
-                                                                          goalsBox.innerHTML = r.goals.map(function (g) {
-                                                                                      return '<div class="hn-goal' + (g.current ? ' hn-goal-cur' : '') + '">' +
-                                                                                                    '<div class="hn-goal-label">' + g.label + '</div>' +
-                                                                                                    '<div class="hn-goal-value">' + g.value + '</div>' +
-                                                                                                  '</div>';
-                                                                          }).join('');
-                                                                } else {
-                                                                          goalsBox.hidden = true;
-                                                                          goalsBox.innerHTML = '';
-                                                                }
+    root.querySelector('#hn-calc-btn').addEventListener('click', function () {
+      var values = {};
+      var ok = true;
+      tool.fields.forEach(function (f) {
+        var el = root.querySelector('#hn-' + f.id);
+        if (f.type === 'select') {
+          values[f.id] = el.value;
+          return;
+        }
+        var v = num(el.value);
+        if (isNaN(v) || v < f.min || v > f.max) ok = false;
+        values[f.id] = v;
       });
 
-      var toggleBtn = root.querySelector('#hn-toggle-btn');
-         toggleBtn.addEventListener('click', function () {
-                 var box = root.querySelector('#hn-explain');
-                 box.hidden = !box.hidden;
-                 toggleBtn.textContent = box.hidden ? '계산 방법 더 보기 ▾' : '접기 ▴';
-         });
-   }
+      var resultBox = root.querySelector('#hn-result');
+      var goalsBox = root.querySelector('#hn-goals');
+      resultBox.hidden = false;
 
-   // ---- 탭형 다중 도구 렌더러 (v3) ---------------------------------------
-   function renderTabs(root, keys, active) {
-         var tabsHtml = keys.map(function (k) {
-                 var t = TOOLS[k];
-                 var label = t ? (t.tabLabel || t.title) : k;
-                 var activeCls = (k === active) ? ' hn-tab-active' : '';
-                 return '<button type="button" class="hn-tab' + activeCls + '" data-tool="' + k + '">' + label + '</button>';
-         }).join('');
+      if (!ok) {
+        root.querySelector('#hn-result-label').textContent = '';
+        root.querySelector('#hn-result-value').textContent = '';
+        goalsBox.hidden = true;
+        goalsBox.innerHTML = '';
+        var numericFields = tool.fields.filter(function (f) { return f.type !== 'select'; });
+        root.querySelector('#hn-result-category').textContent =
+          '값을 확인해주세요 (' + numericFields.map(function (f) {
+            return f.label + ' ' + f.min + '~' + f.max;
+          }).join(', ') + ')';
+        return;
+      }
 
-      root.innerHTML =
-              '<div class="hn-tabs" id="hn-tabs">' + tabsHtml + '</div>' +
-              '<div id="hn-tab-content"></div>';
+      var r = tool.calculate(values);
+      root.querySelector('#hn-result-label').textContent = r.resultLabel;
+      root.querySelector('#hn-result-value').textContent = r.resultValue;
+      root.querySelector('#hn-result-value').style.color = r.color || '#2f5fa8';
+      root.querySelector('#hn-result-category').textContent = r.category || '';
 
-      var contentEl = root.querySelector('#hn-tab-content');
-         renderToolBody(contentEl, active);
+      if (r.goals && r.goals.length) {
+        goalsBox.hidden = false;
+        goalsBox.innerHTML = r.goals.map(function (g) {
+          return '<div class="hn-goal' + (g.current ? ' hn-goal-cur' : '') + '">' +
+            '<div class="hn-goal-label">' + g.label + '</div>' +
+            '<div class="hn-goal-value">' + g.value + '</div>' +
+          '</div>';
+        }).join('');
+      } else {
+        goalsBox.hidden = true;
+        goalsBox.innerHTML = '';
+      }
+    });
 
-      var tabBtns = root.querySelectorAll('.hn-tab');
-         for (var i = 0; i < tabBtns.length; i++) {
-                 tabBtns[i].addEventListener('click', function (e) {
-                           var key = e.currentTarget.getAttribute('data-tool');
-                           for (var j = 0; j < tabBtns.length; j++) { tabBtns[j].classList.remove('hn-tab-active'); }
-                           e.currentTarget.classList.add('hn-tab-active');
-                           renderToolBody(contentEl, key);
-                 });
-         }
-   }
+    var toggleBtn = root.querySelector('#hn-toggle-btn');
+    toggleBtn.addEventListener('click', function () {
+      var box = root.querySelector('#hn-explain');
+      box.hidden = !box.hidden;
+      toggleBtn.textContent = box.hidden ? '계산 방법 더 보기 ▾' : '접기 ▴';
+    });
+  }
 
-   window.HNuggetCalc = {
-         TOOLS: TOOLS,
-         init: function (opts) {
-                 var root = document.getElementById(opts.container);
-                 if (!root) return;
-                 if (opts.tools && opts.tools.length) {
-                           renderTabs(root, opts.tools, opts.active || opts.tools[0]);
-                 } else {
-                           renderToolBody(root, opts.tool);
-                 }
-         }
-   };
+  // ---- 탭형 다중 도구 렌더러 (v3) ---------------------------------------
+  function renderTabs(root, keys, active) {
+    var tabsHtml = keys.map(function (k) {
+      var t = TOOLS[k];
+      var label = t ? (t.tabLabel || t.title) : k;
+      var activeCls = (k === active) ? ' hn-tab-active' : '';
+      return '<button type="button" class="hn-tab' + activeCls + '" data-tool="' + k + '">' + label + '</button>';
+    }).join('');
+
+    root.innerHTML =
+      '<div class="hn-tabs" id="hn-tabs">' + tabsHtml + '</div>' +
+      '<div id="hn-tab-content"></div>';
+
+    var contentEl = root.querySelector('#hn-tab-content');
+    renderToolBody(contentEl, active);
+
+    var tabBtns = root.querySelectorAll('.hn-tab');
+    for (var i = 0; i < tabBtns.length; i++) {
+      tabBtns[i].addEventListener('click', function (e) {
+        var key = e.currentTarget.getAttribute('data-tool');
+        for (var j = 0; j < tabBtns.length; j++) { tabBtns[j].classList.remove('hn-tab-active'); }
+        e.currentTarget.classList.add('hn-tab-active');
+        renderToolBody(contentEl, key);
+      });
+    }
+  }
+
+  window.HNuggetCalc = {
+    TOOLS: TOOLS,
+    init: function (opts) {
+      var root = document.getElementById(opts.container);
+      if (!root) return;
+      if (opts.tools && opts.tools.length) {
+        renderTabs(root, opts.tools, opts.active || opts.tools[0]);
+      } else {
+        renderToolBody(root, opts.tool);
+      }
+    }
+  };
 })();
