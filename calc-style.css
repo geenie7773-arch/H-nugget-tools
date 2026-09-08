@@ -3,84 +3,104 @@
   모바일 우선 — 480px 카드, 큰 입력칸/버튼, 반응형 2단 → 1단
 */
 .hn-card {
-  max-width: 480px;
-  margin: 24px auto;
-  padding: 20px;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  box-sizing: border-box;
-  font-family: inherit;
+    max-width: 480px;
+    margin: 24px auto;
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-family: inherit;
 }
 .hn-fields {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
 }
 .hn-field {
-  flex: 1 1 120px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    flex: 1 1 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 .hn-field label {
-  font-size: 13px;
-  color: #555;
+    font-size: 13px;
+    color: #555;
 }
-.hn-field input {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 100%;
-  box-sizing: border-box;
+.hn-field input,
+.hn-field select {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    font-family: inherit;
+    color: #222;
 }
 .hn-btn {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-  background: #2f5fa8;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: #2f5fa8;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 .hn-btn:active { opacity: .85; }
 .hn-result {
-  margin-top: 16px;
-  padding: 20px;
-  text-align: center;
-  background: #f5f7fa;
-  border-radius: 10px;
+    margin-top: 16px;
+    padding: 20px;
+    text-align: center;
+    background: #f5f7fa;
+    border-radius: 10px;
 }
 .hn-result-label { font-size: 13px; color: #666; margin-bottom: 4px; }
 .hn-result-value { font-size: 32px; font-weight: 700; }
 .hn-result-category { margin-top: 4px; font-size: 15px; color: #333; }
+.hn-goals {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.hn-goal {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+}
+.hn-goal-cur { border-color: #2f5fa8; background: #eef3fa; }
+.hn-goal-label { font-size: 11px; color: #666; margin-bottom: 3px; }
+.hn-goal-value { font-size: 14px; font-weight: 700; color: #222; }
 .hn-note { margin-top: 14px; font-size: 12px; color: #888; line-height: 1.5; }
 .hn-related { margin-top: 10px; font-size: 13px; color: #444; }
 .hn-related span { color: #999; margin-right: 6px; }
 .hn-related a { color: #2f5fa8; text-decoration: none; margin: 0 2px; }
 .hn-toggle {
-  margin-top: 10px;
-  background: none;
-  border: none;
-  color: #2f5fa8;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0;
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: #2f5fa8;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
 }
 .hn-explain {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #ddd;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
 }
 .hn-source { margin-top: 8px; font-size: 12px; color: #999; }
 
 @media (max-width: 480px) {
-  .hn-fields { flex-direction: column; }
-  .hn-card { margin: 16px auto; padding: 16px; }
+    .hn-fields { flex-direction: column; }
+    .hn-card { margin: 16px auto; padding: 16px; }
 }
