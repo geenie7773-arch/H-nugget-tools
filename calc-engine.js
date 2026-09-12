@@ -358,18 +358,7 @@
     }
   }
 
-  window.HNuggetCalc = {
-    TOOLS: TOOLS,
-    init: function (opts) {
-      var root = document.getElementById(opts.container);
-      if (!root) return;
-      if (opts.tools && opts.tools.length) {
-        renderTabs(root, opts.tools, opts.active || opts.tools[0]);
-      } else {
-        renderToolBody(root, opts.tool);
-      }
-    }
-      // ---- 6. 다이어트 칼로리 계산기 ------------------------------------------
+// ---- 6. 다이어트 칼로리 계산기 ------------------------------------------
       TOOLS.dietCalorie = {
         title: '다이어트 칼로리 계산기',
         tabLabel: '다이어트 칼로리',
@@ -424,6 +413,18 @@
         explain: '다이어트 칼로리 계산기는 하루 유지 칼로리(TDEE)에서 목표로 하는 주당 감량 속도만큼 칼로리를 줄인 목표 섭취량을 보여줍니다. 체지방 1kg을 줄이려면 약 7,000~7,700kcal의 누적 칼로리 부족이 필요하다고 보는 것이 일반적이며, 이를 7일로 나누어 하루 감량분을 계산합니다. 질병관리청은 6개월 동안 현재 체중의 5~10퍼센트 감량을 현실적인 목표로 제시하고, 미국 질병통제예방센터(CDC)는 주 1kg 감량을 안전한 다이어트의 상한선으로 봅니다. 이보다 빠른 감량은 근손실과 요요 위험을 높일 수 있어 권장하지 않습니다.',
         related: [] // { label: '목표체중 달성기간 계산기', url: '...' } 발행 후 추가
   };
+  window.HNuggetCalc = {
+    TOOLS: TOOLS,
+    init: function (opts) {
+      var root = document.getElementById(opts.container);
+      if (!root) return;
+      if (opts.tools && opts.tools.length) {
+        renderTabs(root, opts.tools, opts.active || opts.tools[0]);
+      } else {
+        renderToolBody(root, opts.tool);
+      }
+    }
+      
   
   };
 })();
