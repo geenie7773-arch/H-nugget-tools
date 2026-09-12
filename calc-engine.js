@@ -369,5 +369,61 @@
         renderToolBody(root, opts.tool);
       }
     }
+      // ---- 6. 다이어트 칼로리 계산기 ------------------------------------------
+      TOOLS.dietCalorie = {
+        title: '다이어트 칼로리 계산기',
+        tabLabel: '다이어트 칼로리',
+        fields: [
+          { id: 'sex', label: '성별', type: 'select', default: 'm', options: [
+            { value: 'm', label: '남성' },
+            { value: 'f', label: '여성' }
+                  ] },
+          { id: 'age', label: '나이 (세)', placeholder: '30', min: 15, max: 100 },
+          { id: 'height', label: '키 (cm)', placeholder: '170', min: 100, max: 250 },
+          { id: 'weight', label: '몸무게 (kg)', placeholder: '65', min: 20, max: 300 },
+          { id: 'activity', label: '활동량', type: 'select', default: '1.55', options: [
+            { value: '1.2', label: '거의 운동 안 함 (좌식 생활)' },
+            { value: '1.375', label: '가벼운 운동 (주 1~3일)' },
+            { value: '1.55', label: '보통 운동 (주 3~5일)' },
+            { value: '1.725', label: '활발한 운동 (주 6~7일)' },
+            { value: '1.9', label: '매우 활발함 (매일 강도 높은 운동·육체노동)' }
+                  ] },
+          { id: 'goalRate', label: '목표 감량 속도', type: 'select', default: '0.5', options: [
+            { value: '0.25', label: '천천히 (주 0.25kg)' },
+            { value: '0.5', label: '보통 (주 0.5kg, 가장 일반적인 권장치)' },
+            { value: '0.75', label: '빠르게 (주 0.75kg)' },
+            { value: '1.0', label: '최대 권장치 (주 1kg)' }
+                  ] }
+              ],
+        calculate: function (v) {
+                var act = parseFloat(v.activity);
+                var bmr = 10 * v.weight + 6.25 * v.height - 5 * v.age + (v.sex === 'm' ? 5 : -161);
+                var tdee = bmr * act;
+                var rate = parseFloat(v.goalRate);
+                var deficit = Math.round(rate * 1000);
+                var rawTarget = Math.round(tdee - deficit);
+                var floor = v.sex === 'm' ? 1500 : 1200;
+                var unsafe = rawTarget < floor;
+                var target = unsafe ? floor : rawTarget;
+                return {
+                          resultLabel: '하루 목표 섭취 칼로리',
+                          resultValue: target.toLocaleString('ko-KR') + ' kcal',
+                          category: unsafe
+                            ? '계산상 필요한 칼로리(' + rawTarget.toLocaleString('ko-KR') + 'kcal)가 최소 권장 섭취량보다 낮아 최소 섭취량으로 표시했습니다. 감량 속도를 낮추는 것이 안전합니다'
+                                      : '유지 칼로리 ' + Math.round(tdee).toLocaleString('ko-KR') + 'kcal에서 하루 ' + deficit.toLocaleString('ko-KR') + 'kcal 줄인 값',
+                          color: unsafe ? '#d1452b' : '#2f7d6b',
+                          goals: [
+                            { label: '현재 유지 칼로리(TDEE)', value: Math.round(tdee).toLocaleString('ko-KR') + ' kcal' },
+                            { label: '하루 감량분', value: '-' + deficit.toLocaleString('ko-KR') + ' kcal' },
+                            { label: '목표 섭취 칼로리', value: target.toLocaleString('ko-KR') + ' kcal', current: true }
+                                    ]
+                };
+        },
+        note: '체지방 1kg 감량에는 약 7,000~7,700kcal의 누적 칼로리 부족이 필요하다는 것이 통상적인 추정치입니다(질병관리청 국가건강정보포털은 하루 500kcal 감량 시 주 0.5kg 감량 예시를 제시 — 7,000kcal/kg 기준). 성인 최소 권장 섭취량(남성 약 1,500kcal, 여성 약 1,200kcal) 미만으로는 내려가지 않는 것이 좋습니다.',
+        source: '질병관리청 국가건강정보포털 · 대한비만학회 비만 진료지침 · Mifflin-St Jeor 공식(1990) · 기준일 2026-09',
+        explain: '다이어트 칼로리 계산기는 하루 유지 칼로리(TDEE)에서 목표로 하는 주당 감량 속도만큼 칼로리를 줄인 목표 섭취량을 보여줍니다. 체지방 1kg을 줄이려면 약 7,000~7,700kcal의 누적 칼로리 부족이 필요하다고 보는 것이 일반적이며, 이를 7일로 나누어 하루 감량분을 계산합니다. 질병관리청은 6개월 동안 현재 체중의 5~10퍼센트 감량을 현실적인 목표로 제시하고, 미국 질병통제예방센터(CDC)는 주 1kg 감량을 안전한 다이어트의 상한선으로 봅니다. 이보다 빠른 감량은 근손실과 요요 위험을 높일 수 있어 권장하지 않습니다.',
+        related: [] // { label: '목표체중 달성기간 계산기', url: '...' } 발행 후 추가
+  };
+  
   };
 })();
